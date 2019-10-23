@@ -1,6 +1,11 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const webpack = require('webpack')
+
+const cesiumSource = './node_modules/cesium/Source'
+const cesiumWorkers = '../Build/Cesium/Workers'
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -29,9 +34,13 @@ module.exports = {
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
+  crossorigin: undefined,
   devServer: {
     port: port,
     open: true,
+    https: false,
+    hotOnly: false,
+    before: app => {},
     overlay: {
       warnings: false,
       errors: true
@@ -55,8 +64,30 @@ module.exports = {
     name: name,
     resolve: {
       alias: {
-        '@': resolve('src')
+        '@': resolve('src'),
+        'vue$': 'vue/dist/vue.esm.js',
+        'cesium': path.resolve(__dirname, cesiumSource)
       }
+    },
+    output: {
+      sourcePrefix: ' '
+    },
+    amd: {
+      toUrlUndefined: true
+    },
+    plugins: [ // 4
+      new CopyWebpackPlugin([{ from: path.join(cesiumSource, cesiumWorkers), to: 'Workers' }]),
+      new CopyWebpackPlugin([{ from: path.join(cesiumSource, 'Assets'), to: 'Assets' }]),
+      new CopyWebpackPlugin([{ from: path.join(cesiumSource, 'Widgets'), to: 'Widgets' }]),
+      new CopyWebpackPlugin([{ from: path.join(cesiumSource, 'ThirdParty/Workers'), to: 'ThirdParty/Workers' }]),
+      new webpack.DefinePlugin({
+        CESIUM_BASE_URL: JSON.stringify('./')
+      })
+    ],
+    module: {
+      unknownContextCritical: /^.\/.*$/,
+      // eslint-disable-next-line no-dupe-keys
+      unknownContextCritical: false // 6
     }
   },
   chainWebpack(config) {
