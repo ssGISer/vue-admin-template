@@ -39,7 +39,8 @@ module.exports = {
     port: port,
     open: true,
     https: false,
-    hotOnly: false,
+    // hotOnly: false,
+    hot: true,
     before: app => {},
     overlay: {
       warnings: false,

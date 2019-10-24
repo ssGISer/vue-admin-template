@@ -76,6 +76,27 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/layers',
+    component: Layout,
+    redirect: '/layers/scene',
+    name: 'Layers',
+    meta: { title: 'Layers', icon: 'example' },
+    children: [
+      {
+        path: 'scene',
+        name: 'Scene',
+        component: () => import('@/views/scene/cesiumScene'),
+        meta: { title: 'Cesium', icon: 'table' }
+      },
+      {
+        path: 'tree',
+        name: 'CesiumTree',
+        component: () => import('@/views/tree/index'),
+        meta: { title: 'CesiumTree', icon: 'tree' }
+      }
+    ]
+  },
 
   {
     path: '/form',
@@ -96,7 +117,7 @@ export const constantRoutes = [
     redirect: '/nested/menu1',
     name: 'Nested',
     meta: {
-      title: 'Nested',
+      title: 'Nested-1',
       icon: 'nested'
     },
     children: [
